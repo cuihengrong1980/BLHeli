@@ -1,0 +1,32 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 安装 C51 编译器（SDCC）
+      - name: Install SDCC
+        run: sudo apt update && sudo apt install -y sdcc
+
+      # 编译工程（根据实际情况选 Makefile 或直接命令）
+      - name: Build C51 Project
+        run: make  # 如果有 Makefile ，且已适配 SDCC
+        # 若无 Makefile，替换为：
+        # run: sdcc --model-small -o output.hex your_source.c
+
+      # 可选：输出编译产物（如需上传或查看 hex 文件）
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: c51-output
+          path: |
+            *.hex  # 匹配编译生成的 hex 文件
