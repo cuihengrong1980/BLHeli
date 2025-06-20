@@ -165,7 +165,7 @@ E_X_		EQU 34	; X  X  RC CC MA MB MC X     X  X  Ac Bc Cc Ap Bp Cp    PWM fets ac
 ;ESCNO EQU W_
 ;ESCNO EQU X_
 ;ESCNO EQU Y_
-;ESCNO EQU Z_
+ESCNO EQU Z_
 ;ESCNO EQU A_X_  ; Requires MCU_48MHZ=2
 ;ESCNO EQU B_X_  ; Requires MCU_48MHZ=2
 ;ESCNO EQU C_X_  ; Requires MCU_48MHZ=2
@@ -174,11 +174,11 @@ E_X_		EQU 34	; X  X  RC CC MA MB MC X     X  X  Ac Bc Cc Ap Bp Cp    PWM fets ac
 
 ;**** **** **** **** ****
 ; Select the MCU type (or unselect for use with external batch compile file)
-;MCU_48MHZ EQU	2
+MCU_48MHZ EQU	2
 
 ;**** **** **** **** ****
 ; Select the fet deadtime (or unselect for use with external batch compile file)
-;FETON_DELAY EQU 50	; 20.4ns per step
+FETON_DELAY EQU 30	; 20.4ns per step
 
 
 ;**** **** **** **** ****
