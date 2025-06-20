@@ -15,13 +15,53 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install SDCC Compiler
-        run: sudo apt update && sudo apt install -y sdcc
+        run: |
+          sudo apt update
+          sudo apt install -y sdcc
+          sdcc --version  # 验证安装
+
+      - name: Verify Makefile Exists
+        run: |
+          if [ ! -f "Makefile" ]; then
+            echo "Makefile not found. Creating a basic one..."
+            cat > Makefile <<EOF
+all: BLHeli_S.hex
+
+BLHeli_S.hex: BLHeli_S.asm
+    sdasz80 -o BLHeli_S.rel BLHeli_S.asm
+    sdcclib -o BLHeli_S.lib BLHeli_S.rel
+    sdldz80 -i -o BLHeli_S.hex BLHeli_S.lib
+EOF
+          else
+            echo "Makefile found. Contents:"
+            cat Makefile
+          fi
+        shell: bash
 
       - name: Build C51 Project
-        run: make  # 假设工程根目录有 Makefile，内容需适配 SDCC
+        run: |
+          echo "Building project with SDCC..."
+          make 2>&1 | tee build.log  # 保存详细日志
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "Build failed. See build.log for details."
+            exit 1
+          fi
+
+      - name: Check for HEX files
+        run: |
+          HEX_FILES=$(find . -name "*.hex" -type f)
+          if [ -z "$HEX_FILES" ]; then
+            echo "No HEX files found after build."
+            exit 1
+          else
+            echo "Found HEX files:"
+            echo "$HEX_FILES"
+          fi
 
       - name: Upload Compiled Artifact
-        uses: actions/upload-artifact@v4  # 关键：v3 替换为 v4
+        uses: actions/upload-artifact@v4
         with:
           name: c51-output
-          path: "*.hex"  # 匹配编译生成的 HEX 文件，可根据实际调整
+          path: |
+            **/*.hex  # 递归匹配所有目录下的 hex 文件
+          retention-days: 7  # 保留7天
